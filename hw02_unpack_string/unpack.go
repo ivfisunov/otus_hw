@@ -32,7 +32,7 @@ func Unpack(str string) (string, error) {
 			}
 			if unicode.IsDigit(countOfEscapedSymbol) {
 				repeatCount, _ := strconv.Atoi(string(countOfEscapedSymbol))
-				result += string(strings.Repeat(string(escapedSymbol), repeatCount))
+				result += strings.Repeat(string(escapedSymbol), repeatCount)
 				i += 3
 				continue
 			}
@@ -47,7 +47,7 @@ func Unpack(str string) (string, error) {
 		}
 		if unicode.IsDigit(number) {
 			repeatCount, _ := strconv.Atoi(string(number))
-			result += string(strings.Repeat(string(letter), repeatCount))
+			result += strings.Repeat(string(letter), repeatCount)
 			i += 2
 			continue
 		}
