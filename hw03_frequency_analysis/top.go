@@ -6,7 +6,7 @@ import (
 )
 
 type kv struct {
-	key string
+	key   string
 	value int
 }
 
