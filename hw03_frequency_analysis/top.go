@@ -21,7 +21,7 @@ func Top10(text string) []string {
 		frequencyMap[word]++
 	}
 
-	var freqStore []kv
+	var freqStore = make([]kv, 0)
 	for k, v := range frequencyMap {
 		freqStore = append(freqStore, kv{k, v})
 	}
@@ -30,7 +30,7 @@ func Top10(text string) []string {
 	})
 	freqStore = freqStore[:10]
 
-	var result []string
+	var result = make([]string, 0)
 	for _, v := range freqStore {
 		result = append(result, v.key)
 	}
