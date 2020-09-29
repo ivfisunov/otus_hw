@@ -30,11 +30,10 @@ func (c *lruCache) Get(key Key) (interface{}, bool) {
 
 	if _, ok := c.cache[key]; !ok {
 		return nil, false
-	} else {
-		c.queue.MoveToFront(c.cache[key])
-		c.cache[key] = c.queue.Front()
-		return c.cache[key].Value.(*cacheItem).value, true
 	}
+	c.queue.MoveToFront(c.cache[key])
+	c.cache[key] = c.queue.Front()
+	return c.cache[key].Value.(*cacheItem).value, true
 }
 
 func (c *lruCache) Set(key Key, value interface{}) bool {
@@ -49,12 +48,11 @@ func (c *lruCache) Set(key Key, value interface{}) bool {
 		c.queue.PushFront(newCacheItem)
 		c.cache[key] = c.queue.Front()
 		return false
-	} else {
-		c.cache[key].Value.(*cacheItem).value = value
-		c.queue.MoveToFront(c.cache[key])
-		c.cache[key] = c.queue.Front()
-		return true
 	}
+	c.cache[key].Value.(*cacheItem).value = value
+	c.queue.MoveToFront(c.cache[key])
+	c.cache[key] = c.queue.Front()
+	return true
 }
 
 func (c *lruCache) Clear() {
