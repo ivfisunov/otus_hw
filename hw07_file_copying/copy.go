@@ -18,7 +18,7 @@ var chunkSize int64 = 512
 func Copy(fromPath string, toPath string, offset, limit int64) error {
 	fr, err := os.OpenFile(fromPath, os.O_RDONLY, 0444)
 	if err != nil {
-		return errors.New(err)
+		return errors.New("error opening file")
 	}
 	defer fr.Close()
 
@@ -35,7 +35,7 @@ func Copy(fromPath string, toPath string, offset, limit int64) error {
 
 	if offset != 0 {
 		if _, err := fr.Seek(offset, io.SeekStart); err != nil {
-			return errors.New(err)
+			return errors.New("error seeking file")
 		}
 	}
 
@@ -46,7 +46,7 @@ func Copy(fromPath string, toPath string, offset, limit int64) error {
 	defer fw.Close()
 
 	if err := fw.Chmod(fileMode); err != nil {
-		return errors.New(err)
+		return errors.New("error chmoding file :)")
 	}
 
 	// calculate bytes length to read
@@ -66,7 +66,7 @@ func Copy(fromPath string, toPath string, offset, limit int64) error {
 		if realSizeToCopy == 0 {
 			break
 		}
-		if errors.Is(io.EOF) {
+		if errors.Is(err, io.EOF) {
 			break
 		}
 		if err != nil {
