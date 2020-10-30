@@ -70,7 +70,7 @@ func Copy(fromPath string, toPath string, offset, limit int64) error {
 			break
 		}
 		if err != nil {
-			return err
+			return errors.New("error writing file")
 		}
 	}
 	bar.Finish()
