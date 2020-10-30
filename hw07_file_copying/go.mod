@@ -1,4 +1,4 @@
-module github.com/fisunoviv/otus_hw/hw07_file_copying
+module github.com/ivfisunov/otus_hw/hw07_file_copying
 
 go 1.14
 
