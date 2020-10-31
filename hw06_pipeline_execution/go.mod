@@ -1,5 +1,8 @@
-module github.com/fixme_my_friend/hw06_pipeline_execution
+module github.com/ivfisunov/otus_hw/hw06_pipeline_execution
 
 go 1.14
 
-require github.com/stretchr/testify v1.5.1
+require (
+	github.com/sqs/goreturns v0.0.0-20181028201513-538ac6014518
+	github.com/stretchr/testify v1.5.1
+)

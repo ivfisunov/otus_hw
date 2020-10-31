@@ -14,6 +14,59 @@ import (
 func TestRun(t *testing.T) {
 	defer goleak.VerifyNone(t)
 
+	t.Run("if passed <=0 number of workers", func(t *testing.T) {
+		tasksCount := 20
+		tasks := make([]Task, 0, tasksCount)
+
+		var runTasksCount int32
+
+		for i := 0; i < tasksCount; i++ {
+			taskSleep := time.Millisecond * time.Duration(rand.Intn(100))
+			tasks = append(tasks, func() error {
+				time.Sleep(taskSleep)
+				atomic.AddInt32(&runTasksCount, 1)
+				return nil
+			})
+		}
+
+		workersCount := -2
+		maxErrorsCount := 0
+
+		result := Run(tasks, workersCount, maxErrorsCount)
+		require.Nil(t, result)
+		require.Equal(t, runTasksCount, int32(tasksCount), "not all tasks were completed")
+	})
+
+	t.Run("if passed <=0 number of errors threshold", func(t *testing.T) {
+		tasksCount := 30
+		tasks := make([]Task, 0, tasksCount)
+
+		var runTasksCount int32
+
+		for i := 0; i < tasksCount; i++ {
+			err := fmt.Errorf("error from task %d", i)
+			tasks = append(tasks, func() error {
+				time.Sleep(time.Millisecond * time.Duration(rand.Intn(100)))
+				atomic.AddInt32(&runTasksCount, 1)
+				return err
+			})
+		}
+
+		workersCount := 10
+		maxErrorsCount := 0
+		result := Run(tasks, workersCount, maxErrorsCount)
+		require.Nil(t, result)
+		require.Equal(t, runTasksCount, int32(tasksCount), "not all tasks were completed")
+
+		runTasksCount = 0
+		workersCount2 := 3
+		maxErrorsCount2 := -1
+		result2 := Run(tasks, workersCount2, maxErrorsCount2)
+		require.Nil(t, result2)
+		require.Equal(t, runTasksCount, int32(tasksCount), "not all tasks were completed")
+
+	})
+
 	t.Run("if were errors in first M tasks, than finished not more N+M tasks", func(t *testing.T) {
 		tasksCount := 50
 		tasks := make([]Task, 0, tasksCount)
