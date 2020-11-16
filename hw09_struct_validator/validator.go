@@ -42,11 +42,10 @@ func Validate(v interface{}) error {
 				valueName := val.Type().Field(i).Name
 				err := validateField(normalizedTag, value)
 				if err != nil {
-					er := ValidationError{
+					validationErrors = append(validationErrors, ValidationError{
 						valueName,
 						err,
-					}
-					validationErrors = append(validationErrors, er)
+					})
 				}
 			}
 		}
