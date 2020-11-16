@@ -43,8 +43,8 @@ func Validate(v interface{}) error {
 				err := validateField(normalizedTag, value)
 				if err != nil {
 					validationErrors = append(validationErrors, ValidationError{
-						valueName,
-						err,
+						Field: valueName,
+						Err:   err,
 					})
 				}
 			}
