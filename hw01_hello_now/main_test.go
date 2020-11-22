@@ -35,7 +35,7 @@ func TestHelloNow(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-
+		
 		expected := `current time: 1945-05-09 10:03:00 +0000 UTC
 exact time: 1945-05-09 10:03:02 +0000 UTC
 `
