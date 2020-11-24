@@ -24,7 +24,7 @@ type DomainStat map[string]int
 func GetDomainStat(r io.Reader, domain string) (DomainStat, error) {
 	u, err := getUsers(r)
 	if err != nil {
-		return nil, fmt.Errorf("get users error: %s", err)
+		return nil, fmt.Errorf("get users error: %w", err)
 	}
 	return countDomains(u, domain)
 }
