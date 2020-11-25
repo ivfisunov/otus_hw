@@ -53,6 +53,9 @@ func countDomains(u users, domain string) (DomainStat, error) {
 	for _, user := range u {
 		if strings.Contains(user.Email, domain) {
 			mail := strings.Split(user.Email, "@")
+			if len(mail) != 2 {
+				continue
+			}
 			splitedMail := strings.ToLower(mail[1])
 			result[splitedMail]++
 		}
