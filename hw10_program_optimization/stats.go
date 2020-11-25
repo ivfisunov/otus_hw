@@ -10,13 +10,13 @@ import (
 )
 
 type User struct {
-	ID       int
-	Name     string
-	Username string
-	Email    string
-	Phone    string
-	Password string
-	Address  string
+	ID       int    `json:"-"`
+	Name     string `json:"-"`
+	Username string `json:"-"`
+	Email    string `json:"Email"`
+	Phone    string `json:"-"`
+	Password string `json:"-"`
+	Address  string `json:"-"`
 }
 
 type DomainStat map[string]int
@@ -30,13 +30,14 @@ func GetDomainStat(r io.Reader, domain string) (DomainStat, error) {
 }
 
 type users [100_000]User
+var user User
 
 func getUsers(r io.Reader) (result users, err error) {
 	scanner := bufio.NewScanner(r)
-	var user User
+	json := jsoniter.ConfigCompatibleWithStandardLibrary
 	i := 0
 	for scanner.Scan() {
-		err = jsoniter.Unmarshal(scanner.Bytes(), &user)
+		err = json.Unmarshal(scanner.Bytes(), &user)
 		if err != nil {
 			return
 		}
@@ -51,8 +52,8 @@ func countDomains(u users, domain string) (DomainStat, error) {
 
 	for _, user := range u {
 		if strings.Contains(user.Email, domain) {
-			mail := strings.Split(user.Email, "@")[1]
-			splitedMail := strings.ToLower(mail)
+			mail := strings.Split(user.Email, "@")
+			splitedMail := strings.ToLower(mail[1])
 			result[splitedMail]++
 		}
 	}
