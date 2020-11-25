@@ -30,11 +30,11 @@ func GetDomainStat(r io.Reader, domain string) (DomainStat, error) {
 }
 
 type users [100_000]User
-var user User
 
 func getUsers(r io.Reader) (result users, err error) {
 	scanner := bufio.NewScanner(r)
 	json := jsoniter.ConfigCompatibleWithStandardLibrary
+	var user User
 	i := 0
 	for scanner.Scan() {
 		err = json.Unmarshal(scanner.Bytes(), &user)
