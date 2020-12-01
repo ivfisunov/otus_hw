@@ -12,6 +12,36 @@ type test struct {
 	err      error
 }
 
+func TestUnpackUTF8(t *testing.T) {
+	for _, tst := range [...]test{
+		{
+			input:    "А3-Б2-С3",
+			expected: "ААА-ББ-ССС",
+		},
+		{
+			input:    "∑3®†9¥2",
+			expected: "∑∑∑®†††††††††¥¥",
+		},
+		{
+			input:    "∑3®†9¥22",
+			expected: "",
+			err:      ErrInvalidString,
+		},
+		{
+			input:    `П\\рив\\ет`,
+			expected: `П\рив\ет`,
+		},
+		{
+			input:    `\\\\\\5`,
+			expected: `\\\\\\\`,
+		},
+	} {
+		result, err := Unpack(tst.input)
+		require.Equal(t, tst.err, err)
+		require.Equal(t, tst.expected, result)
+	}
+}
+
 func TestUnpack(t *testing.T) {
 	for _, tst := range [...]test{
 		{
@@ -53,7 +83,7 @@ func TestUnpack(t *testing.T) {
 }
 
 func TestUnpackWithEscape(t *testing.T) {
-	t.Skip() // Remove if task with asterisk completed
+	// t.Skip() // Remove if task with asterisk completed
 
 	for _, tst := range [...]test{
 		{
