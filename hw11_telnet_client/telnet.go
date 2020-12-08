@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"net"
 	"time"
@@ -29,7 +30,7 @@ func (c *client) Connect() error {
 	var err error
 	c.connection, err = net.DialTimeout("tcp", c.address, c.timeout)
 	if err != nil {
-		return err
+		return fmt.Errorf("%w", err)
 	}
 	return nil
 }
@@ -41,7 +42,7 @@ func (c *client) Close() error {
 func (c *client) Send() error {
 	_, err := io.Copy(c.connection, c.in)
 	if err != nil {
-		return err
+		return fmt.Errorf("%w", err)
 	}
 	return nil
 }
@@ -49,7 +50,7 @@ func (c *client) Send() error {
 func (c *client) Receive() error {
 	_, err := io.Copy(c.out, c.connection)
 	if err != nil {
-		return err
+		return fmt.Errorf("%w", err)
 	}
 	return nil
 }
