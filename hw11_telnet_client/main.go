@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net"
 	"os"
 	"os/signal"
 	"sync"
@@ -34,37 +35,37 @@ func main() {
 		os.Exit(-1)
 	}()
 
-	client := NewTelnetClient(host+":"+port, timeout, os.Stdin, os.Stdout)
+	client := NewTelnetClient(net.JoinHostPort(host, port), timeout, os.Stdin, os.Stdout)
 	err = client.Connect()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Fprintf(os.Stderr, "...connected to %v\n", host+":"+port)
+	fmt.Fprintf(os.Stderr, "...connected to %v\n", net.JoinHostPort(host, port))
 
 	wg := &sync.WaitGroup{}
 	wg.Add(2)
-	go Receive(client, wg)
-	go Send(client, wg)
+	go receive(client, wg)
+	go send(client, wg)
 	wg.Wait()
 }
 
-func Receive(client TelnetClient, wg *sync.WaitGroup) {
+func receive(client TelnetClient, wg *sync.WaitGroup) {
 	defer wg.Done()
+	defer client.Close()
 	err := client.Receive()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		return
 	}
 }
 
-func Send(client TelnetClient, wg *sync.WaitGroup) {
+func send(client TelnetClient, wg *sync.WaitGroup) {
 	defer wg.Done()
+	defer client.Close()
 	err := client.Send()
 	if err != nil {
 		fmt.Fprint(os.Stderr, "...connection closed by peer\n")
 		return
 	}
 	fmt.Fprint(os.Stderr, "...EOF\n")
-	client.Close()
 }
