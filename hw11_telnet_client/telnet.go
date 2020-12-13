@@ -39,12 +39,18 @@ func (c *client) Close() error {
 	return c.connection.Close()
 }
 
-func (c *client) Send() (err error) {
-	_, err = io.Copy(c.connection, c.in)
-	return
+func (c *client) Send() error {
+	_, err := io.Copy(c.connection, c.in)
+	if err != nil {
+		return fmt.Errorf("sending error: %w", err)
+	}
+	return nil
 }
 
-func (c *client) Receive() (err error) {
-	_, err = io.Copy(c.out, c.connection)
-	return
+func (c *client) Receive() error {
+	_, err := io.Copy(c.out, c.connection)
+	if err != nil {
+		return fmt.Errorf("receiving error: %w", err)
+	}
+	return nil
 }
