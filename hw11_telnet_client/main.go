@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-var ErrEOF = fmt.Errorf("...EOF")
+var ErrEOF = fmt.Errorf("...EOF");
 
 var timeoutFlag = flag.String("timeout", "10s", "connection timeout")
 
@@ -78,5 +78,5 @@ func send(client TelnetClient, wg *sync.WaitGroup, eofCh chan error) {
 		fmt.Fprint(os.Stderr, "...connection closed by peer\n")
 		return
 	}
-	eofCh <- EOF
+	eofCh <- ErrEOF
 }
