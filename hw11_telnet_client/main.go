@@ -1,18 +1,21 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"log"
 	"net"
 	"os"
 	"os/signal"
-	"sync"
+
+	// "sync"
 	"syscall"
 	"time"
 )
 
-var ErrEOF = fmt.Errorf("...EOF")
+var ErrEOF = errors.New("...EOF")
 
 var timeoutFlag = flag.String("timeout", "10s", "connection timeout")
 
@@ -30,53 +33,47 @@ func main() {
 		log.Fatal("error parsing time")
 	}
 
-	eofCh := make(chan error, 1)
-	ch := make(chan os.Signal, 1)
-	signal.Notify(ch, syscall.SIGINT)
+	stopCh := make(chan os.Signal, 1)
+	signal.Notify(stopCh, syscall.SIGINT)
 
 	client := NewTelnetClient(net.JoinHostPort(host, port), timeout, os.Stdin, os.Stdout)
+	defer client.Close()
+
 	err = client.Connect()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	go func() {
-		for {
-			select {
-			case <-ch:
-				os.Exit(-1)
-			case err := <-eofCh:
-				fmt.Fprintln(os.Stderr, err)
-				client.Close()
-				return
-			}
-		}
-	}()
-
 	fmt.Fprintf(os.Stderr, "...connected to %v\n", net.JoinHostPort(host, port))
 
-	wg := &sync.WaitGroup{}
-	wg.Add(2)
-	go receive(client, wg, eofCh)
-	go send(client, wg, eofCh)
-	wg.Wait()
-}
+	ctx, cancel := context.WithCancel(context.Background())
 
-func receive(client TelnetClient, wg *sync.WaitGroup, eofCh chan error) {
-	defer wg.Done()
-	err := client.Receive()
-	if err != nil {
-		eofCh <- err
+	go receive(client, cancel)
+	go send(client, cancel)
+
+	select {
+	case <-stopCh:
+		return
+	case <-ctx.Done():
 		return
 	}
 }
 
-func send(client TelnetClient, wg *sync.WaitGroup, eofCh chan error) {
-	defer wg.Done()
+func receive(client TelnetClient, cancel context.CancelFunc) {
+	err := client.Receive()
+	if err != nil {
+		cancel()
+		return
+	}
+}
+
+func send(client TelnetClient, cancel context.CancelFunc) {
 	err := client.Send()
 	if err != nil {
 		fmt.Fprint(os.Stderr, "...connection closed by peer\n")
+		cancel()
 		return
 	}
-	eofCh <- ErrEOF
+	fmt.Fprintln(os.Stderr, ErrEOF)
+	cancel()
 }
