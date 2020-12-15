@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-var EOF = fmt.Errorf("...EOF")
+var ErrEOF = fmt.Errorf("...EOF")
 
 var timeoutFlag = flag.String("timeout", "10s", "connection timeout")
 
