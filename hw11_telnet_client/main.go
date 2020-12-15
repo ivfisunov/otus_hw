@@ -9,8 +9,6 @@ import (
 	"net"
 	"os"
 	"os/signal"
-
-	// "sync"
 	"syscall"
 	"time"
 )
@@ -37,8 +35,6 @@ func main() {
 	signal.Notify(stopCh, syscall.SIGINT)
 
 	client := NewTelnetClient(net.JoinHostPort(host, port), timeout, os.Stdin, os.Stdout)
-	defer client.Close()
-
 	err = client.Connect()
 	if err != nil {
 		log.Fatal(err)
@@ -48,6 +44,7 @@ func main() {
 
 	ctx, cancel := context.WithCancel(context.Background())
 
+	defer client.Close()
 	go receive(client, cancel)
 	go send(client, cancel)
 
