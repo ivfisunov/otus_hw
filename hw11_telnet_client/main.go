@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-const EOF = "...EOF"
+var EOF = fmt.Errorf("...EOF")
 
 var timeoutFlag = flag.String("timeout", "10s", "connection timeout")
 
@@ -30,19 +30,28 @@ func main() {
 		log.Fatal("error parsing time")
 	}
 
-	eofCh := make(chan string, 1)
+	eofCh := make(chan error, 1)
 	ch := make(chan os.Signal, 1)
 	signal.Notify(ch, syscall.SIGINT)
-	go func() {
-		<-ch
-		os.Exit(-1)
-	}()
 
 	client := NewTelnetClient(net.JoinHostPort(host, port), timeout, os.Stdin, os.Stdout)
 	err = client.Connect()
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	go func() {
+		for {
+			select {
+			case <-ch:
+				os.Exit(-1)
+			case err := <-eofCh:
+				fmt.Fprintln(os.Stderr, err)
+				client.Close()
+				return
+			}
+		}
+	}()
 
 	fmt.Fprintf(os.Stderr, "...connected to %v\n", net.JoinHostPort(host, port))
 
@@ -53,28 +62,21 @@ func main() {
 	wg.Wait()
 }
 
-func receive(client TelnetClient, wg *sync.WaitGroup, eofCh chan string) {
+func receive(client TelnetClient, wg *sync.WaitGroup, eofCh chan error) {
 	defer wg.Done()
 	err := client.Receive()
 	if err != nil {
-		select {
-		case <-eofCh:
-			return
-		default:
-			fmt.Fprintln(os.Stderr, err)
-			return
-		}
+		eofCh <- err
+		return
 	}
 }
 
-func send(client TelnetClient, wg *sync.WaitGroup, eofCh chan string) {
+func send(client TelnetClient, wg *sync.WaitGroup, eofCh chan error) {
 	defer wg.Done()
-	defer client.Close()
 	err := client.Send()
 	if err != nil {
 		fmt.Fprint(os.Stderr, "...connection closed by peer\n")
 		return
 	}
-	fmt.Fprintln(os.Stderr, EOF)
 	eofCh <- EOF
 }
