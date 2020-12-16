@@ -14,6 +14,7 @@ import (
 )
 
 var ErrEOF = errors.New("...EOF")
+var ErrCC = errors.New("...connection closed by peer")
 
 var timeoutFlag = flag.String("timeout", "10s", "connection timeout")
 
@@ -57,20 +58,19 @@ func main() {
 }
 
 func receive(client TelnetClient, cancel context.CancelFunc) {
+	defer cancel()
 	err := client.Receive()
 	if err != nil {
-		cancel()
 		return
 	}
+	fmt.Fprintln(os.Stderr, ErrCC)
 }
 
 func send(client TelnetClient, cancel context.CancelFunc) {
+	defer cancel()
 	err := client.Send()
 	if err != nil {
-		fmt.Fprint(os.Stderr, "...connection closed by peer\n")
-		cancel()
 		return
 	}
 	fmt.Fprintln(os.Stderr, ErrEOF)
-	cancel()
 }
