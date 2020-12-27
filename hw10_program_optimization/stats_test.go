@@ -9,6 +9,28 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestGetDomainStatErr(t *testing.T) {
+	data := `{}
+{"mail":"mLynch@broWsecat.com"}
+{"Id":3,"Name":"Clarence Olson","Username":"RachelAdams","Email":"Rose@Smith@Browsecat.com","Phone":"988-48-97","Password":"71kuz3gA5w","Address":"Monterey Park 39"}
+{"Email":""}
+{"Id":5,"Name":"Janice Rose","Username":"KeithHart","Email":"nulla@Linktype.com","Phone":"146-91-01","Password":"acSBF5","Address":"Russell Trail 61"}`
+
+	t.Run("find 'com'", func(t *testing.T) {
+		result, err := GetDomainStat(bytes.NewBufferString(data), "com")
+		require.NoError(t, err)
+		require.Equal(t, DomainStat{
+			"linktype.com":  1,
+		}, result)
+	})
+
+	t.Run("find 'gov'", func(t *testing.T) {
+		result, err := GetDomainStat(bytes.NewBufferString(data), "gov")
+		require.NoError(t, err)
+		require.Equal(t, DomainStat{}, result)
+	})
+}
+
 func TestGetDomainStat(t *testing.T) {
 	data := `{"Id":1,"Name":"Howard Mendoza","Username":"0Oliver","Email":"aliquid_qui_ea@Browsedrive.gov","Phone":"6-866-899-36-79","Password":"InAQJvsq","Address":"Blackbird Place 25"}
 {"Id":2,"Name":"Jesse Vasquez","Username":"qRichardson","Email":"mLynch@broWsecat.com","Phone":"9-373-949-64-00","Password":"SiZLeNSGn","Address":"Fulton Hill 80"}

@@ -2,6 +2,9 @@ package main
 
 import (
 	"flag"
+	"fmt"
+	"log"
+	"os"
 )
 
 var (
@@ -18,5 +21,13 @@ func init() {
 
 func main() {
 	flag.Parse()
-	// Place your code here
+
+	if from == "" || to == "" {
+		fmt.Fprintln(os.Stdout, "Provide -from and -to paramenters")
+		return
+	}
+	err := Copy(from, to, offset, limit)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
