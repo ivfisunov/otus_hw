@@ -1,4 +1,4 @@
-package createStorage
+package createstorage
 
 import (
 	"fmt"

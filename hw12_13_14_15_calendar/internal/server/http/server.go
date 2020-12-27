@@ -40,10 +40,8 @@ func (s *Server) Start(ctx context.Context) error {
 		return err
 	}
 
-	select {
-	case <-ctx.Done():
-		return nil
-	}
+	<-ctx.Done()
+	return nil
 }
 
 func (s *Server) Stop(ctx context.Context) error {

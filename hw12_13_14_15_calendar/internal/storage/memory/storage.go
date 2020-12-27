@@ -47,7 +47,6 @@ func (s *Storage) UpdateEvent(id int, event storage.Event) error {
 	s.events[event.ID] = event
 	s.mu.Unlock()
 	return nil
-
 }
 
 func (s *Storage) DeleteEvent(id int) error {
@@ -57,40 +56,38 @@ func (s *Storage) DeleteEvent(id int) error {
 	return nil
 }
 
-func (s *Storage) ListEventDay(date time.Time) ([]*storage.Event, error) {
-	var events []*storage.Event
+func (s *Storage) ListEventDay(date time.Time) ([]storage.Event, error) {
+	var events []storage.Event
 	s.mu.RLock()
 	for _, e := range s.events {
 		if e.Date.After(date) && e.Date.Before(date.AddDate(0, 0, 1)) {
-			events = append(events, &e)
+			events = append(events, e)
 		}
 	}
 	s.mu.RUnlock()
 	return events, nil
 }
 
-func (s *Storage) ListEventWeek(date time.Time) ([]*storage.Event, error) {
-	var events []*storage.Event
+func (s *Storage) ListEventWeek(date time.Time) ([]storage.Event, error) {
+	var events []storage.Event
 	s.mu.RLock()
 	for _, e := range s.events {
 		if e.Date.After(date) && e.Date.Before(date.AddDate(0, 0, 7)) {
-			events = append(events, &e)
+			events = append(events, e)
 		}
 	}
 	s.mu.RUnlock()
 	return events, nil
-
 }
 
-func (s *Storage) ListEventMonth(date time.Time) ([]*storage.Event, error) {
-	var events []*storage.Event
+func (s *Storage) ListEventMonth(date time.Time) ([]storage.Event, error) {
+	var events []storage.Event
 	s.mu.RLock()
 	for _, e := range s.events {
 		if e.Date.After(date) && e.Date.Before(date.AddDate(0, 1, 0)) {
-			events = append(events, &e)
+			events = append(events, e)
 		}
 	}
 	s.mu.RUnlock()
 	return events, nil
-
 }

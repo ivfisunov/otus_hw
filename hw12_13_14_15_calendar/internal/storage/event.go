@@ -26,9 +26,9 @@ type EventStorage interface {
 	CreateEvent(Event) error
 	UpdateEvent(int, Event) error
 	DeleteEvent(int) error
-	ListEventDay(time.Time) ([]*Event, error)
-	ListEventWeek(time.Time) ([]*Event, error)
-	ListEventMonth(time.Time) ([]*Event, error)
+	ListEventDay(time.Time) ([]Event, error)
+	ListEventWeek(time.Time) ([]Event, error)
+	ListEventMonth(time.Time) ([]Event, error)
 }
 
 var ErrDateBusy = errors.New("this time is busy")

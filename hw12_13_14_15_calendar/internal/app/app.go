@@ -13,7 +13,7 @@ type App struct {
 }
 
 type Logger interface {
-	logger.LoggerI
+	logger.Logger
 }
 
 type Storage interface {

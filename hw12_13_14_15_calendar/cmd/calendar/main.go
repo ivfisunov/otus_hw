@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -13,7 +14,8 @@ import (
 	"github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/app"
 	"github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/logger"
 	internalhttp "github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/server/http"
-	createStorage "github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/storage/create-storage"
+	createstorage "github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/storage/create-storage"
+	_ "github.com/lib/pq"
 )
 
 var configFile string
@@ -40,7 +42,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	storage, err := createStorage.Init(config.Storage.Type, config.Storage.Dsn)
+	storage, err := createstorage.Init(config.Storage.Type, config.Storage.Dsn)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -69,8 +71,7 @@ func main() {
 
 	logg.Info("calendar is running...")
 
-	if err := server.Start(ctx); err != nil && err != http.ErrServerClosed {
+	if err := server.Start(ctx); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		logg.Error("failed to start http server: " + err.Error())
-		os.Exit(1)
 	}
 }

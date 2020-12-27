@@ -7,12 +7,12 @@ import (
 	"os"
 )
 
-type Logger struct {
+type Logg struct {
 	logger *log.Logger
 	level  string
 }
 
-type LoggerI interface {
+type Logger interface {
 	Debug(string)
 	Info(string)
 	Warn(string)
@@ -26,7 +26,7 @@ var mapping = map[string]int{
 	"ERROR": 4,
 }
 
-func New(level string, filePath string) (*Logger, error) {
+func New(level string, filePath string) (*Logg, error) {
 	if _, ok := mapping[level]; !ok {
 		return nil, fmt.Errorf("invalid logger level type: %v", level)
 	}
@@ -38,31 +38,31 @@ func New(level string, filePath string) (*Logger, error) {
 
 	mw := io.MultiWriter(logFile, os.Stdout)
 	logger := log.New(mw, "", log.Ldate|log.Ltime)
-	return &Logger{logger: logger, level: level}, nil
+	return &Logg{logger: logger, level: level}, nil
 }
 
-func (l Logger) Debug(msg string) {
+func (l Logg) Debug(msg string) {
 	if mapping["DEBUG"] >= mapping[l.level] {
 		l.logger.SetPrefix("[DEBUG] ")
 		l.logger.Println(msg)
 	}
 }
 
-func (l Logger) Info(msg string) {
+func (l Logg) Info(msg string) {
 	if mapping["INFO"] >= mapping[l.level] {
 		l.logger.SetPrefix("[INFO] ")
 		l.logger.Println(msg)
 	}
 }
 
-func (l Logger) Warn(msg string) {
+func (l Logg) Warn(msg string) {
 	if mapping["WARN"] >= mapping[l.level] {
 		l.logger.SetPrefix("[WARN] ")
 		l.logger.Println(msg)
 	}
 }
 
-func (l Logger) Error(msg string) {
+func (l Logg) Error(msg string) {
 	if mapping["ERROR"] >= mapping[l.level] {
 		l.logger.SetPrefix("[ERROR] ")
 		l.logger.Println(msg)

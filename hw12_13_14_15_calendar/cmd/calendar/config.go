@@ -30,5 +30,3 @@ func NewConfig(filePath string) (*Config, error) {
 	}
 	return &conf, nil
 }
-
-// TODO
