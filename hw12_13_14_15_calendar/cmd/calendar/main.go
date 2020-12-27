@@ -3,6 +3,9 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
+	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"time"
@@ -10,13 +13,13 @@ import (
 	"github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/app"
 	"github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/logger"
 	internalhttp "github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/server/http"
-	memorystorage "github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/storage/memory"
+	createStorage "github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/storage/create-storage"
 )
 
 var configFile string
 
 func init() {
-	flag.StringVar(&configFile, "config", "/etc/calendar/config.toml", "Path to configuration file")
+	flag.StringVar(&configFile, "config", "configs/config.toml", "Path to configuration file")
 }
 
 func main() {
@@ -27,13 +30,23 @@ func main() {
 		return
 	}
 
-	config := NewConfig()
-	logg := logger.New(config.Logger.Level)
+	config, err := NewConfig(configFile)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	storage := memorystorage.New()
+	logg, err := logger.New(config.Logger.Level, config.Logger.Path)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	storage, err := createStorage.Init(config.Storage.Type, config.Storage.Dsn)
+	if err != nil {
+		log.Fatal(err)
+	}
 	calendar := app.New(logg, storage)
 
-	server := internalhttp.NewServer(calendar)
+	server := internalhttp.NewServer(calendar, config.Server.Host, config.Server.Port)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -42,6 +55,7 @@ func main() {
 		signal.Notify(signals)
 
 		<-signals
+		fmt.Println("\nServer is stopping...")
 		signal.Stop(signals)
 		cancel()
 
@@ -55,7 +69,7 @@ func main() {
 
 	logg.Info("calendar is running...")
 
-	if err := server.Start(ctx); err != nil {
+	if err := server.Start(ctx); err != nil && err != http.ErrServerClosed {
 		logg.Error("failed to start http server: " + err.Error())
 		os.Exit(1)
 	}
