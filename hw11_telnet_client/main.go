@@ -1,6 +1,76 @@
 package main
 
+import (
+	"context"
+	"errors"
+	"flag"
+	"fmt"
+	"log"
+	"net"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+)
+
+var ErrEOF = errors.New("...EOF")
+var ErrCC = errors.New("...connection closed by peer")
+
+var timeoutFlag = flag.String("timeout", "10s", "connection timeout")
+
 func main() {
-	// Place your code here
-	// P.S. Do not rush to throw context down, think think if it is useful with blocking operation?
+	flag.Parse()
+	args := flag.Args()
+	if len(args) < 2 {
+		log.Fatal("provide host and port")
+	}
+	host := args[0]
+	port := args[1]
+
+	timeout, err := time.ParseDuration(*timeoutFlag)
+	if err != nil {
+		log.Fatal("error parsing time")
+	}
+
+	stopCh := make(chan os.Signal, 1)
+	signal.Notify(stopCh, syscall.SIGINT)
+
+	client := NewTelnetClient(net.JoinHostPort(host, port), timeout, os.Stdin, os.Stdout)
+	err = client.Connect()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Fprintf(os.Stderr, "...connected to %v\n", net.JoinHostPort(host, port))
+
+	ctx, cancel := context.WithCancel(context.Background())
+
+	defer client.Close()
+	go receive(client, cancel)
+	go send(client, cancel)
+
+	select {
+	case <-stopCh:
+		return
+	case <-ctx.Done():
+		return
+	}
+}
+
+func receive(client TelnetClient, cancel context.CancelFunc) {
+	defer cancel()
+	err := client.Receive()
+	if err != nil {
+		return
+	}
+	fmt.Fprintln(os.Stderr, ErrCC)
+}
+
+func send(client TelnetClient, cancel context.CancelFunc) {
+	defer cancel()
+	err := client.Send()
+	if err != nil {
+		return
+	}
+	fmt.Fprintln(os.Stderr, ErrEOF)
 }
