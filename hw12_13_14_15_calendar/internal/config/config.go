@@ -1,11 +1,12 @@
-package main
+package config
 
 import "github.com/BurntSushi/toml"
 
 type Config struct {
 	Logger  LoggerConf
 	Storage StorageConf
-	Server  ServerConf
+	Http    HttpConf
+	Grpc    GrpcConf
 }
 
 type LoggerConf struct {
@@ -18,7 +19,12 @@ type StorageConf struct {
 	Dsn  string
 }
 
-type ServerConf struct {
+type HttpConf struct {
+	Host string
+	Port string
+}
+
+type GrpcConf struct {
 	Host string
 	Port string
 }
