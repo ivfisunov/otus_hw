@@ -49,7 +49,7 @@ func main() {
 	}
 	calendar := app.New(logg, storage)
 
-	restServer := internalhttp.NewServer(calendar, config.Http.Host, config.Http.Port)
+	restServer := internalhttp.NewServer(calendar, config.HTTP.Host, config.HTTP.Port)
 	grpcServer := internalgrpc.NewServer(calendar, config.Grpc.Host, config.Grpc.Port)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

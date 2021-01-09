@@ -5,7 +5,7 @@ import "github.com/BurntSushi/toml"
 type Config struct {
 	Logger  LoggerConf
 	Storage StorageConf
-	Http    HttpConf
+	HTTP    HTTPConf
 	Grpc    GrpcConf
 }
 
@@ -19,7 +19,7 @@ type StorageConf struct {
 	Dsn  string
 }
 
-type HttpConf struct {
+type HTTPConf struct {
 	Host string
 	Port string
 }

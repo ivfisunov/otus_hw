@@ -52,6 +52,9 @@ func (s *Server) Stop() {
 
 func (s *Server) CreateEvent(ctx context.Context, e *CreateEventReq) (*empty.Empty, error) {
 	event, err := parseEvent(e.Event)
+	if err != nil {
+		s.Logger.Error("event parsing error: " + err.Error())
+	}
 	err = s.Storage.CreateEvent(event)
 	if err != nil {
 		s.Logger.Error("event creating error: " + err.Error())
@@ -63,6 +66,9 @@ func (s *Server) CreateEvent(ctx context.Context, e *CreateEventReq) (*empty.Emp
 func (s *Server) UpdateEvent(ctx context.Context, e *UpdateEventReq) (*empty.Empty, error) {
 	id := int(e.Id)
 	event, err := parseEvent(e.Event)
+	if err != nil {
+		s.Logger.Error("event parsing error: " + err.Error())
+	}
 	err = s.Storage.UpdateEvent(id, event)
 	if err != nil {
 		s.Logger.Error("event updating error: " + err.Error())
@@ -92,7 +98,7 @@ func (s *Server) ListEventDay(ctx context.Context, e *ListEventReq) (*ListEventR
 		return nil, fmt.Errorf("error searching events: %w", err)
 	}
 
-	var evnt []*Event
+	evnt := make([]*Event, 0, len(events))
 	for _, event := range events {
 		ev, err := parseEventProto(event)
 		if err != nil {
@@ -117,7 +123,7 @@ func (s *Server) ListEventWeek(ctx context.Context, e *ListEventReq) (*ListEvent
 		return nil, fmt.Errorf("error searching events: %w", err)
 	}
 
-	var evnt []*Event
+	evnt := make([]*Event, 0, len(events))
 	for _, event := range events {
 		ev, err := parseEventProto(event)
 		if err != nil {
@@ -142,7 +148,7 @@ func (s *Server) ListEventMonth(ctx context.Context, e *ListEventReq) (*ListEven
 		return nil, fmt.Errorf("error searching events: %w", err)
 	}
 
-	var evnt []*Event
+	evnt := make([]*Event, 0, len(events))
 	for _, event := range events {
 		ev, err := parseEventProto(event)
 		if err != nil {

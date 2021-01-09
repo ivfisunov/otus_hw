@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
 	"strconv"
@@ -92,7 +93,7 @@ func (s *Server) createEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = json.NewEncoder(w).Encode(map[string]string{"message": "event created successfuly"})
+	err = json.NewEncoder(w).Encode(map[string]string{"message": "event created successfully"})
 	if err != nil {
 		s.Logger.Error("error sending response")
 	}
@@ -115,15 +116,15 @@ func (s *Server) updateEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = json.NewEncoder(w).Encode(map[string]string{"message": "event updated successfuly"})
+	err = json.NewEncoder(w).Encode(map[string]string{"message": "event updated successfully"})
 	if err != nil {
 		s.Logger.Error("error sending response")
 	}
 }
 
 func (s *Server) deleteEvent(w http.ResponseWriter, r *http.Request) {
-	if sId, ok := mux.Vars(r)["id"]; ok {
-		id, err := strconv.Atoi(sId)
+	if sID, ok := mux.Vars(r)["id"]; ok {
+		id, err := strconv.Atoi(sID)
 		if err != nil {
 			s.Logger.Error("error converting id: " + err.Error())
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -136,7 +137,7 @@ func (s *Server) deleteEvent(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = json.NewEncoder(w).Encode(map[string]string{"message": "event deleted successfuly"})
+		err = json.NewEncoder(w).Encode(map[string]string{"message": "event deleted successfully"})
 		if err != nil {
 			s.Logger.Error("error sending response")
 		}
@@ -148,14 +149,7 @@ func (s *Server) deleteEvent(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) listEventDay(w http.ResponseWriter, r *http.Request) {
-	body := DateBody{}
-	err := json.NewDecoder(r.Body).Decode(&body)
-	if err != nil {
-		s.Logger.Error("body parser error: " + err.Error())
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	day, err := time.Parse("2006-01-02T15:04:05-0700", body.Date)
+	day, err := parseDate(r.Body)
 	if err != nil {
 		s.Logger.Error("error parsing date: " + err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -176,14 +170,7 @@ func (s *Server) listEventDay(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) listEventWeek(w http.ResponseWriter, r *http.Request) {
-	body := DateBody{}
-	err := json.NewDecoder(r.Body).Decode(&body)
-	if err != nil {
-		s.Logger.Error("body parser error: " + err.Error())
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	day, err := time.Parse("2006-01-02T15:04:05-0700", body.Date)
+	day, err := parseDate(r.Body)
 	if err != nil {
 		s.Logger.Error("error parsing date: " + err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -204,14 +191,7 @@ func (s *Server) listEventWeek(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) listEventMonth(w http.ResponseWriter, r *http.Request) {
-	body := DateBody{}
-	err := json.NewDecoder(r.Body).Decode(&body)
-	if err != nil {
-		s.Logger.Error("body parser error: " + err.Error())
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	day, err := time.Parse("2006-01-02T15:04:05-0700", body.Date)
+	day, err := parseDate(r.Body)
 	if err != nil {
 		s.Logger.Error("error parsing date: " + err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -229,4 +209,18 @@ func (s *Server) listEventMonth(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		s.Logger.Error("error sending response")
 	}
+}
+
+func parseDate(r io.Reader) (time.Time, error) {
+	body := DateBody{}
+	err := json.NewDecoder(r).Decode(&body)
+	if err != nil {
+		return time.Time{}, err
+	}
+	day, err := time.Parse("2006-01-02T15:04:05-0700", body.Date)
+	if err != nil {
+		return time.Time{}, err
+	}
+
+	return day, nil
 }
