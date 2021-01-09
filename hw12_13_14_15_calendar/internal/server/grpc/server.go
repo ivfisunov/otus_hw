@@ -16,14 +16,14 @@ import (
 
 type Server struct {
 	*app.App
-	addr   string
 	server *grpc.Server
 	UnimplementedCalendarServer
+	addr string
 }
 
 func NewServer(app *app.App, host string, port string) *Server {
 	addr := net.JoinHostPort(host, port)
-	return &Server{app, addr, nil, UnimplementedCalendarServer{}}
+	return &Server{app, nil, UnimplementedCalendarServer{}, addr}
 }
 
 func (s *Server) Start() error {
