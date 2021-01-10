@@ -4,7 +4,7 @@ import "github.com/BurntSushi/toml"
 
 type Config struct {
 	Logger LoggerConf
-	Amqp   AmqpConf
+	AMQP   AMQPConf
 }
 
 type LoggerConf struct {
@@ -12,8 +12,8 @@ type LoggerConf struct {
 	Path  string
 }
 
-type AmqpConf struct {
-	Uri      string
+type AMQPConf struct {
+	URI      string
 	Qname    string
 	Exchname string
 	Exchtype string

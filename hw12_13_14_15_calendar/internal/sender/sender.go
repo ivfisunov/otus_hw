@@ -26,5 +26,5 @@ func (s *Sender) ProcessMessages() error {
 }
 
 func (s *Sender) handleMessage(msg *amqppublisher.Notification) {
-	s.logg.Info(fmt.Sprintf("Recieved and sent message: %q", *msg))
+	s.logg.Info(fmt.Sprintf("Received and sent message: %q", *msg))
 }

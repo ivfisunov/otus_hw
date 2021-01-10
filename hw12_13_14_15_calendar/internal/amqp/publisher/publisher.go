@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/logger"
 	"github.com/streadway/amqp"
+	"github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/logger"
 )
 
 type Publisher struct {
@@ -71,6 +71,7 @@ func (p *Publisher) Connect() error {
 		return err
 	}
 
+	p.logg.Info("connected to broker")
 	return nil
 }
 

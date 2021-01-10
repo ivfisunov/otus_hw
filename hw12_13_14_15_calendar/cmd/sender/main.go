@@ -38,7 +38,7 @@ func main() {
 
 	subscriber := amqpsubscriber.NewSubscriber(
 		logg,
-		config.Amqp.Uri,
+		config.Amqp.URI,
 		config.Amqp.Qname,
 		config.Amqp.Exchname,
 		config.Amqp.Exchtype)

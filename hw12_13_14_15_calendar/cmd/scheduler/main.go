@@ -47,7 +47,7 @@ func main() {
 
 	publisher := amqppublisher.NewPublisher(
 		logg,
-		config.Amqp.Uri,
+		config.Amqp.URI,
 		config.Amqp.Qname,
 		config.Amqp.Exchname,
 		config.Amqp.Exchtype)
