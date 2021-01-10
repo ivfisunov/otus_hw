@@ -9,8 +9,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/amqp/publisher"
-	"github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/config/config_scheduler"
+	amqppublisher "github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/amqp/publisher"
+	configscheduler "github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/config/config_scheduler"
 	"github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/logger"
 	"github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/scheduler"
 	internalgrpc "github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/server/grpc"
@@ -47,10 +47,10 @@ func main() {
 
 	publisher := amqppublisher.NewPublisher(
 		logg,
-		config.Amqp.URI,
-		config.Amqp.Qname,
-		config.Amqp.Exchname,
-		config.Amqp.Exchtype)
+		config.AMQP.URI,
+		config.AMQP.Qname,
+		config.AMQP.Exchname,
+		config.AMQP.Exchtype)
 
 	scheduler := scheduler.NewScheduler(client, logg, publisher)
 	logg.Info("scheduler started...")
