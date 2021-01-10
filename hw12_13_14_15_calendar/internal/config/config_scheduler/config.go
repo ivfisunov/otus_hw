@@ -5,7 +5,7 @@ import "github.com/BurntSushi/toml"
 type Config struct {
 	Logger LoggerConf
 	Grpc   APIConf
-	Amqp   AmqpConf
+	AMQP   AMQPConf
 }
 
 type LoggerConf struct {
@@ -18,7 +18,7 @@ type APIConf struct {
 	Port string
 }
 
-type AmqpConf struct {
+type AMQPConf struct {
 	URI      string
 	Qname    string
 	Exchname string

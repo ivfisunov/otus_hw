@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
-	"github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/amqp/publisher"
+	amqppublisher "github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/amqp/publisher"
 	"github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/logger"
 	internalgrpc "github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/server/grpc"
 )

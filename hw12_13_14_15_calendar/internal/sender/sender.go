@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	amqppublisher "github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/amqp/publisher"
-	"github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/amqp/subscriber"
+	amqpsubscriber "github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/amqp/subscriber"
 	"github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/logger"
 )
 

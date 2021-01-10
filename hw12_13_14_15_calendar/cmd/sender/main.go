@@ -8,7 +8,7 @@ import (
 	"syscall"
 
 	amqpsubscriber "github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/amqp/subscriber"
-	"github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/config/config_scheduler"
+	configscheduler "github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/config/config_scheduler"
 	"github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/logger"
 	"github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/sender"
 	_ "github.com/lib/pq"
@@ -38,10 +38,10 @@ func main() {
 
 	subscriber := amqpsubscriber.NewSubscriber(
 		logg,
-		config.Amqp.URI,
-		config.Amqp.Qname,
-		config.Amqp.Exchname,
-		config.Amqp.Exchtype)
+		config.AMQP.URI,
+		config.AMQP.Qname,
+		config.AMQP.Exchname,
+		config.AMQP.Exchtype)
 
 	sender := sender.NewSender(logg, subscriber)
 	logg.Info("sender started...")
