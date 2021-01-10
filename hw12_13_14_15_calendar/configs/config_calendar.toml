@@ -2,12 +2,14 @@
 level = "INFO"
 path = "./logs/logfile.log"
 
-# TODO
-# ...
 [storage]
-type = "sql"
+type = "memory"
 dsn = "user=calendar_user password=123456 dbname=calendar sslmode=disable"
 
-[server]
+[http]
 host="localhost"
 port="4500"
+
+[grpc]
+host="localhost"
+port="4501"

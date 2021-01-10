@@ -1,11 +1,10 @@
-package main
+package configsender
 
 import "github.com/BurntSushi/toml"
 
 type Config struct {
-	Logger  LoggerConf
-	Storage StorageConf
-	Server  ServerConf
+	Logger LoggerConf
+	AMQP   AMQPConf
 }
 
 type LoggerConf struct {
@@ -13,14 +12,11 @@ type LoggerConf struct {
 	Path  string
 }
 
-type StorageConf struct {
-	Type string
-	Dsn  string
-}
-
-type ServerConf struct {
-	Host string
-	Port string
+type AMQPConf struct {
+	URI      string
+	Qname    string
+	Exchname string
+	Exchtype string
 }
 
 func NewConfig(filePath string) (*Config, error) {

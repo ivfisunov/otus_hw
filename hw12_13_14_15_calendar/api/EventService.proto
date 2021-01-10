@@ -2,6 +2,48 @@ syntax = "proto3";
 
 package event;
 
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/empty.proto";
+
+option go_package = ".;internalgrpc";
+
 message Event {
-    // TODO
+  int32 id = 1;
+  string title = 2;
+  google.protobuf.Timestamp date = 3;
+  google.protobuf.Duration duration = 4;
+  string description = 5;
+  int32 userId = 6;
+  google.protobuf.Duration notifyBefore = 7;
+}
+
+message CreateEventReq {
+  Event event = 1;
+}
+
+message UpdateEventReq {
+  int32 id = 1;
+  Event event = 2;
+}
+
+message DeleteEventReq {
+  int32 id = 1;
+}
+
+message ListEventReq {
+  google.protobuf.Timestamp date = 1;
+}
+
+message ListEventRes {
+  repeated Event events = 1;
+}
+
+service Calendar {
+  rpc CreateEvent(CreateEventReq) returns (google.protobuf.Empty);
+  rpc UpdateEvent(UpdateEventReq) returns (google.protobuf.Empty);
+  rpc DeleteEvent(DeleteEventReq) returns (google.protobuf.Empty);
+  rpc ListEventDay(ListEventReq) returns (ListEventRes);
+  rpc ListEventWeek(ListEventReq) returns (ListEventRes);
+  rpc ListEventMonth(ListEventReq) returns (ListEventRes);
 }

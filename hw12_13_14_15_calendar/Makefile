@@ -6,9 +6,11 @@ LDFLAGS := -X main.release="develop" -X main.buildDate=$(shell date -u +%Y-%m-%d
 
 build:
 	go build -v -o $(BIN) -ldflags "$(LDFLAGS)" ./cmd/calendar
+	go build -v -o ./bin/calendar_scheduler ./cmd/scheduler
+	go build -v -o ./bin/calendar_sender ./cmd/sender
 
 run: build
-	$(BIN) -config ./configs/config.toml
+	$(BIN) -config ./configs/config_calendar.toml
 
 build-img:
 	docker build \
@@ -33,5 +35,8 @@ lint: install-lint-deps
 
 migrate:
 	goose -dir=migrations postgres "user=calendar_user password=123456 dbname=calendar sslmode=disable" up
+
+generate:
+	go generate ./...
 
 .PHONY: build run build-img run-img version test lint

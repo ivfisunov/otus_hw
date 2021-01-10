@@ -1,0 +1,9 @@
+[logger]
+level = "INFO"
+path = "./logs/logfile.log"
+
+[amqp]
+uri="amqp://guest:guest@localhost:5672/"
+qname="calendar"
+exchname="calendar_exchange"
+exchtype="direct"

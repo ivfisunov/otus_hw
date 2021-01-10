@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"flag"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -12,16 +11,18 @@ import (
 	"time"
 
 	"github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/app"
+	configcal "github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/config/config_cal"
 	"github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/logger"
+	internalgrpc "github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/server/grpc"
 	internalhttp "github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/server/http"
-	createstorage "github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/storage/create-storage"
+	createstorage "github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/storage/create_storage"
 	_ "github.com/lib/pq"
 )
 
 var configFile string
 
 func init() {
-	flag.StringVar(&configFile, "config", "configs/config.toml", "Path to configuration file")
+	flag.StringVar(&configFile, "config", "configs/config_calendar.toml", "Path to configuration file")
 }
 
 func main() {
@@ -32,7 +33,7 @@ func main() {
 		return
 	}
 
-	config, err := NewConfig(configFile)
+	config, err := configcal.NewConfig(configFile)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -48,7 +49,8 @@ func main() {
 	}
 	calendar := app.New(logg, storage)
 
-	server := internalhttp.NewServer(calendar, config.Server.Host, config.Server.Port)
+	restServer := internalhttp.NewServer(calendar, config.HTTP.Host, config.HTTP.Port)
+	grpcServer := internalgrpc.NewServer(calendar, config.Grpc.Host, config.Grpc.Port)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -57,21 +59,25 @@ func main() {
 		signal.Notify(signals)
 
 		<-signals
-		fmt.Println("\nServer is stopping...")
+		logg.Info("Servers are stopping...")
 		signal.Stop(signals)
-		cancel()
+		// cancel()
 
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
 		defer cancel()
 
-		if err := server.Stop(ctx); err != nil {
+		grpcServer.Stop()
+		if err := restServer.Stop(ctx); err != nil {
 			logg.Error("failed to stop http server: " + err.Error())
 		}
 	}()
 
 	logg.Info("calendar is running...")
 
-	if err := server.Start(ctx); err != nil && !errors.Is(err, http.ErrServerClosed) {
+	if err := grpcServer.Start(); err != nil {
+		logg.Error("failed to start grpc server: " + err.Error())
+	}
+	if err := restServer.Start(ctx); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		logg.Error("failed to start http server: " + err.Error())
 	}
 }
