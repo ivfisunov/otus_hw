@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/app"
-	"github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/config"
+	"github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/config/config_cal"
 	"github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/logger"
 	internalgrpc "github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/server/grpc"
 	internalhttp "github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/server/http"
@@ -22,7 +22,7 @@ import (
 var configFile string
 
 func init() {
-	flag.StringVar(&configFile, "config", "configs/config.toml", "Path to configuration file")
+	flag.StringVar(&configFile, "config", "configs/config_calendar.toml", "Path to configuration file")
 }
 
 func main() {
@@ -33,7 +33,7 @@ func main() {
 		return
 	}
 
-	config, err := config.NewConfig(configFile)
+	config, err := configcal.NewConfig(configFile)
 	if err != nil {
 		log.Fatal(err)
 	}

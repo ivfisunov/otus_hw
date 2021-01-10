@@ -1,12 +1,11 @@
-package config
+package configscheduler
 
 import "github.com/BurntSushi/toml"
 
 type Config struct {
-	Logger  LoggerConf
-	Storage StorageConf
-	HTTP    HTTPConf
-	Grpc    GrpcConf
+	Logger LoggerConf
+	Grpc   ApiConf
+	Amqp   AmqpConf
 }
 
 type LoggerConf struct {
@@ -14,19 +13,16 @@ type LoggerConf struct {
 	Path  string
 }
 
-type StorageConf struct {
-	Type string
-	Dsn  string
-}
-
-type HTTPConf struct {
+type ApiConf struct {
 	Host string
 	Port string
 }
 
-type GrpcConf struct {
-	Host string
-	Port string
+type AmqpConf struct {
+	Uri      string
+	Qname    string
+	Exchname string
+	Exchtype string
 }
 
 func NewConfig(filePath string) (*Config, error) {

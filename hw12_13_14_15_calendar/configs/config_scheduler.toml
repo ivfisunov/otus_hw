@@ -1,0 +1,13 @@
+[logger]
+level = "INFO"
+path = "./logs/logfile.log"
+
+[grpc]
+host="localhost"
+port="4501"
+
+[amqp]
+uri="amqp://guest:guest@localhost:5672/"
+qname="calendar"
+exchname="calendar_exchange"
+exchtype="direct"
