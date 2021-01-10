@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/app"
-	"github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/config/config_cal"
+	configcal "github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/config/config_cal"
 	"github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/logger"
 	internalgrpc "github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/server/grpc"
 	internalhttp "github.com/ivfisunov/otus_hw/hw12_13_14_15_calendar/internal/server/http"
